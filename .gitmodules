@@ -4,3 +4,6 @@
 [submodule "lib/quiche"]
 	path = lib/quiche
 	url = https://github.com/cloudflare/quiche
+[submodule "lib/boringssl"]
+	path = lib/boringssl
+	url = https://github.com/google/boringssl
