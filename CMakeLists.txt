@@ -21,7 +21,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # If using windows, make it a static binary to avoid errors around nor having libgcc[..].dll, libstdcc++[..].dll
 if (WIN32)
     set(BUILD_SHARED_LIBS OFF)
-    set(CMAKE_EXE_LINKER_FLAGS "-static")
+    set(CMAKE_EXE_LINKER_FLAGS "-static") # for executable projects
+    set(CMAKE_SHARED_LINKER_FLAGS "-static") # for library projects
 endif()
 
 add_compile_options(-Wno-error) # boringssl
@@ -33,6 +34,7 @@ corrosion_set_env_vars(quiche "QUICHE_BSSL_PATH=${CMAKE_CURRENT_BINARY_DIR}/lib/
 corrosion_add_target_local_rustflags(quiche "-Clink-args=-lstdc++")
 
 
-add_executable(ac_test main.cpp)
+add_library(demo SHARED src/main.cpp)
+#target_include_directories(demo PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 
-target_link_libraries(ac_test PUBLIC quiche-api)
+target_link_libraries(demo PUBLIC quiche-api)

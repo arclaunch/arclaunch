@@ -26,6 +26,13 @@
                 "strategy": "external"
             },
             "toolchainFile": "toolchain-mingw64.cmake"
+        },
+        
+        {
+            "name": "android-cross",
+            "displayName": "Android (cross-compiled)",
+            "inherits": "base",
+            "toolchainFile": "toolchain-android.cmake"
         }
     ]
 }
