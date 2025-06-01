@@ -1,0 +1,6 @@
+[submodule "lib/corrosion"]
+	path = lib/corrosion
+	url = https://github.com/corrosion-rs/corrosion
+[submodule "lib/quiche"]
+	path = lib/quiche
+	url = https://github.com/cloudflare/quiche
