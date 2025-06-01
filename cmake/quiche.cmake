@@ -4,9 +4,12 @@ corrosion_import_crate(
     FEATURES ffi
 )
 
+add_dependencies(quiche ssl crypto)
+
 add_library(quiche-api INTERFACE)
 target_include_directories(quiche-api INTERFACE ${CMAKE_CURRENT_LIST_DIR}/../lib/quiche/quiche/include)
-target_link_libraries(quiche-api INTERFACE quiche)
+target_link_libraries(quiche-api INTERFACE quiche ssl) # our boringssl for ssl and crypto
 
-# Rust libraries must be installed using `corrosion_install`.
-#corrosion_install(TARGETS quiche EXPORT RustLibTargets)
+if (WIN32)
+    target_link_libraries(quiche-api INTERFACE crypt32)
+endif()

@@ -1,0 +1,31 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "binaryDir": "build/${presetName}",
+            "installDir": "build/${presetName}",
+            "generator": "Ninja"
+        },
+        {
+            "name": "linux",
+            "displayName": "Linux (native)",
+            "inherits": "base",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            }
+        },
+        {
+            "name": "windows-cross",
+            "displayName": "Windows (cross-compiled)",
+            "inherits": "base",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "toolchainFile": "toolchain-mingw64.cmake"
+        }
+    ]
+}
