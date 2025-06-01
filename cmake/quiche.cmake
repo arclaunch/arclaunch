@@ -4,7 +4,7 @@ corrosion_import_crate(
     FEATURES ffi
 )
 
-add_dependencies(quiche ssl crypto)
+add_dependencies(_cargo-build_quiche ssl crypto)
 
 add_library(quiche-api INTERFACE)
 target_include_directories(quiche-api INTERFACE ${CMAKE_CURRENT_LIST_DIR}/../lib/quiche/quiche/include)
