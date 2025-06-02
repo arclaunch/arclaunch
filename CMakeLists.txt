@@ -34,6 +34,10 @@ corrosion_add_target_local_rustflags(quiche "-Clink-args=-lstdc++")
 # CLI11
 add_subdirectory(lib/cli11)
 
+
+# Add Jolt
+add_subdirectory(lib/joltphysics/Build)
+
 # libevent
 set(EVENT__DISABLE_OPENSSL ON)
 add_subdirectory(lib/event)
@@ -52,4 +56,14 @@ target_sources(server
 )
 target_include_directories(server PUBLIC ${CMAKE_CURRENT_LIST_DIR}/arclaunch/server/include)
 
-target_link_libraries(server PUBLIC quiche-api CLI11::CLI11 event_shared uthash)
+target_link_libraries(server PUBLIC quiche-api CLI11::CLI11 event_shared uthash Jolt)
+
+
+include(ExternalProject)
+ExternalProject_Add(
+    jolt_ext
+    PREFIX ${CMAKE_BINARY_DIR}/lib/joltphysics-external/Build
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/lib/joltphysics/Build
+    CMAKE_ARGS -DTARGET_PERFORMANCE_TEST=ON -DTARGET_VIEWER=ON -DENABLE_INSTALL=OFF -DCMAKE_BUILD_TYPE=Release
+    INSTALL_COMMAND ""
+)

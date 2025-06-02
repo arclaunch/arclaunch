@@ -16,3 +16,6 @@
 [submodule "lib/uthash"]
 	path = lib/uthash
 	url = https://github.com/troydhanson/uthash
+[submodule "lib/joltphysics"]
+	path = lib/joltphysics
+	url = https://github.com/jrouwe/JoltPhysics
