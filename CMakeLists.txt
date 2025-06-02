@@ -9,11 +9,9 @@ project(
     LANGUAGES C CXX
 )
 
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 11)
-
-# Submodules / dependencies
-# add_subdirectory(lib/cli11)
+# init-statements in if; jolt
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)
 
 set(OPENSSL_NO_ASM TRUE)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -33,8 +31,21 @@ include(cmake/quiche.cmake)
 corrosion_set_env_vars(quiche "QUICHE_BSSL_PATH=${CMAKE_CURRENT_BINARY_DIR}/lib/boringssl/")
 corrosion_add_target_local_rustflags(quiche "-Clink-args=-lstdc++")
 
+# CLI11
+add_subdirectory(lib/cli11)
 
-add_library(demo SHARED src/main.cpp)
-#target_include_directories(demo PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
+# libevent
+set(EVENT__DISABLE_OPENSSL ON)
+add_subdirectory(lib/event)
 
-target_link_libraries(demo PUBLIC quiche-api)
+
+add_executable(server)
+target_sources(server
+    PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/arclaunch/server/src/main.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/arclaunch/server/src/cli.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/arclaunch/server/src/quic/server.cpp
+)
+target_include_directories(server PUBLIC ${CMAKE_CURRENT_LIST_DIR}/arclaunch/server/include)
+
+target_link_libraries(server PUBLIC quiche-api CLI11::CLI11 event_shared)
