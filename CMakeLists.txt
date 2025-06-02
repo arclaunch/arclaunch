@@ -67,3 +67,6 @@ ExternalProject_Add(
     CMAKE_ARGS -DTARGET_PERFORMANCE_TEST=ON -DTARGET_VIEWER=ON -DENABLE_INSTALL=OFF -DCMAKE_BUILD_TYPE=Release
     INSTALL_COMMAND ""
 )
+
+
+add_subdirectory(arclaunch/physics)
