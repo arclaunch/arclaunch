@@ -12,6 +12,7 @@
 #include "jolt/broad_phase.hpp"
 #include "jolt/object.hpp"
 #include "jolt/object_broad_phase_filter.hpp"
+#include "jolt/debug/recorder.hpp"
 
 namespace server::jolt
 {
@@ -65,6 +66,8 @@ namespace server::jolt
         ::physics::jolt::object::ObjectLayerPairFilterImpl *object_vs_object_layer_filter;
 
         JPH::PhysicsSystem *physics_system;
+
+        ::physics::jolt::debug::Recorder *recorder;
 
     public:
         Provider();

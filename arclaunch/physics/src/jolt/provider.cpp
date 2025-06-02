@@ -52,6 +52,8 @@ namespace server::jolt
         // Now we can create the actual physics system.
         physics_system = new JPH::PhysicsSystem();
         physics_system->Init(cMaxBodies, cNumBodyMutexes, cMaxBodyPairs, cMaxContactConstraints, *broad_phase_layer_interface, *object_vs_broad_phase_layer_filter, *object_vs_object_layer_filter);
+
+        recorder = new ::physics::jolt::debug::Recorder("state.jor");
     };
 
     // demo from HelloWorld jolt
@@ -104,6 +106,8 @@ namespace server::jolt
 
             // Step the world
             physics_system->Update(cDeltaTime, cCollisionSteps, temp_allocator, job_system);
+
+            recorder->drawIfAvailable(physics_system);
         }
 
         // delete logic
