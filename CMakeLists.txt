@@ -39,6 +39,10 @@ set(EVENT__DISABLE_OPENSSL ON)
 add_subdirectory(lib/event)
 
 
+add_library(uthash INTERFACE)
+target_include_directories(uthash INTERFACE ${CMAKE_CURRENT_LIST_DIR}/lib/uthash/src)
+
+
 add_executable(server)
 target_sources(server
     PRIVATE
@@ -48,4 +52,4 @@ target_sources(server
 )
 target_include_directories(server PUBLIC ${CMAKE_CURRENT_LIST_DIR}/arclaunch/server/include)
 
-target_link_libraries(server PUBLIC quiche-api CLI11::CLI11 event_shared)
+target_link_libraries(server PUBLIC quiche-api CLI11::CLI11 event_shared uthash)

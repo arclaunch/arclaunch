@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/arclaunch/server/include/**",
-                "${workspaceFolder}/lib/quiche/quiche/include/**"
+                "${workspaceFolder}/lib/quiche/quiche/include/**",
+                "${workspaceFolder}/lib/uthash/src"
             ]
         }
     ],
