@@ -14,6 +14,8 @@ target_sources(${PROJECT}
     PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/src/jolt/bootstrap.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/jolt/provider.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/jolt/broad_phase.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/jolt/object.cpp
 )
 
 

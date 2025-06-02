@@ -4,6 +4,8 @@
 #include "cli.hpp"
 #include "quic/server.hpp"
 
+#include "jolt/provider.hpp"
+
 int main(int argc, char **argv)
 {
     // Create an args struct
@@ -27,8 +29,12 @@ int main(int argc, char **argv)
     server.configure();
 
     // starting libevent loop
-    std::wcout << "Server listening" << std::endl;
-    event_base_dispatch(base);
+    // std::wcout << "Server listening" << std::endl;
+    // event_base_dispatch(base);
+
+    // jolt time
+    server::jolt::Provider joltProvider;
+    joltProvider.initial();
 
     std::wcout << "Shutting down" << std::endl;
 

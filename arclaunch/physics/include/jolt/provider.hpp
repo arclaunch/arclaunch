@@ -7,6 +7,11 @@
 // Jolt includes
 #include <Jolt/Core/TempAllocator.h>
 #include <Jolt/Core/JobSystemThreadPool.h>
+#include <Jolt/Physics/PhysicsSystem.h>
+
+#include "jolt/broad_phase.hpp"
+#include "jolt/object.hpp"
+#include "jolt/object_broad_phase_filter.hpp"
 
 namespace server::jolt
 {
@@ -55,8 +60,16 @@ namespace server::jolt
          */
         JPH::JobSystemThreadPool *job_system;
 
+        ::physics::jolt::broad_phase::LayerInterfaceImpl *broad_phase_layer_interface;
+        ::physics::jolt::ObjectVsBroadPhaseLayerFilterImpl *object_vs_broad_phase_layer_filter;
+        ::physics::jolt::object::ObjectLayerPairFilterImpl *object_vs_object_layer_filter;
+
+        JPH::PhysicsSystem *physics_system;
+
     public:
         Provider();
+        void initial();
+        void start();
     };
 };
 

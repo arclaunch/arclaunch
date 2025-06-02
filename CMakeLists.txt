@@ -56,7 +56,7 @@ target_sources(server
 )
 target_include_directories(server PUBLIC ${CMAKE_CURRENT_LIST_DIR}/arclaunch/server/include)
 
-target_link_libraries(server PUBLIC quiche-api CLI11::CLI11 event_shared uthash Jolt)
+target_link_libraries(server PUBLIC quiche-api CLI11::CLI11 event_shared uthash arclaunch::physics)
 
 
 include(ExternalProject)

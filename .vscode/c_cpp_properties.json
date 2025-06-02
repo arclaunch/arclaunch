@@ -4,8 +4,10 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/arclaunch/server/include/**",
+                "${workspaceFolder}/arclaunch/physics/include/**",
                 "${workspaceFolder}/lib/quiche/quiche/include/**",
-                "${workspaceFolder}/lib/uthash/src"
+                "${workspaceFolder}/lib/uthash/src",
+                "${workspaceFolder}/lib/joltphysics"
             ]
         }
     ],
