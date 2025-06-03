@@ -7,7 +7,8 @@
                 "${workspaceFolder}/arclaunch/physics/include/**",
                 "${workspaceFolder}/lib/quiche/quiche/include/**",
                 "${workspaceFolder}/lib/uthash/src",
-                "${workspaceFolder}/lib/joltphysics"
+                "${workspaceFolder}/lib/joltphysics",
+                "${workspaceFolder}/lib/boost/libs/**/include/**"
             ]
         }
     ],
