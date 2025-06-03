@@ -38,6 +38,9 @@ add_subdirectory(lib/cli11)
 # Add Jolt
 add_subdirectory(lib/joltphysics/Build)
 
+# Add Boost
+add_subdirectory(lib/boost)
+
 # libevent
 set(EVENT__DISABLE_OPENSSL ON)
 add_subdirectory(lib/event)
