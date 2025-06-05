@@ -1,10 +1,13 @@
 #include "quic/server.hpp"
 
 #include <fcntl.h>
-#ifndef WIN32
-#include <netdb.h>
-#else
+#if defined(WIN32)
 #include <ws2tcpip.h>
+#elif defined(ANDROID)
+#include <linux/in.h>
+#include <arpa/inet.h>
+#else
+#include <netdb.h>
 #endif
 
 #include <iostream>
