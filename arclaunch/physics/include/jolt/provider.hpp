@@ -14,6 +14,8 @@
 #include "jolt/object_broad_phase_filter.hpp"
 #include "jolt/debug/recorder.hpp"
 
+#include <boost/signals2.hpp>
+
 namespace server::jolt
 {
     class Provider
@@ -23,13 +25,13 @@ namespace server::jolt
          * Max amount of rigidbodies that can be added to the physics system.
          * Trying to exceed this amount will cause an error.
          */
-        const uint cMaxBodies = 65536;
+        const unsigned int cMaxBodies = 65536;
 
         /**
          * How many mutexes to allocate to protect rigidbodies from concurrent access.
          * Set to zero to use default settings.
          */
-        const uint cNumBodyMutexes = 0;
+        const unsigned int cNumBodyMutexes = 0;
 
         /**
          * Max amount of body pairs that can be queued at any time.
@@ -41,7 +43,7 @@ namespace server::jolt
          * If this buffer is too small the queue will fill up and the broad
          * phase jobs will start to do narrow phase work (slightly less efficient)
          */
-        const uint cMaxBodyPairs = 65536;
+        const unsigned int cMaxBodyPairs = 65536;
 
         /**
          * Max size of the constraint buffer.
@@ -49,7 +51,7 @@ namespace server::jolt
          * then these additional contacts will be ignored and bodies will start
          * falling through the world.
          */
-        const uint cMaxContactConstraints = 10240;
+        const unsigned int cMaxContactConstraints = 10240;
 
         /**
          * Temporaary allocator for (temp) allocations during the physics update
@@ -73,6 +75,7 @@ namespace server::jolt
         Provider();
         void initial();
         void start();
+        boost::signals2::signal<void(const JPH::Vec3)> posSignal;
     };
 };
 

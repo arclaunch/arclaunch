@@ -14,7 +14,7 @@ namespace physics::jolt
         {
             static constexpr ::JPH::BroadPhaseLayer NON_MOVING(0);
             static constexpr ::JPH::BroadPhaseLayer MOVING(1);
-            static constexpr uint NUM_LAYERS(2);
+            static constexpr unsigned int NUM_LAYERS(2);
         };
 
         class LayerInterfaceImpl final : public ::JPH::BroadPhaseLayerInterface
@@ -22,7 +22,7 @@ namespace physics::jolt
         public:
             LayerInterfaceImpl();
 
-            virtual uint GetNumBroadPhaseLayers() const override
+            virtual unsigned int GetNumBroadPhaseLayers() const override
             {
                 return layers::NUM_LAYERS;
             }

@@ -90,7 +90,7 @@ namespace server::jolt
         // We simulate the physics world in discrete time steps. 60 Hz is a good rate to update the physics system.
         const float cDeltaTime = 1.0f / 60.0f;
 
-        uint step = 0;
+        unsigned int step = 0;
         while (body_interface.IsActive(sphere_id))
         {
             // Next step
@@ -108,6 +108,8 @@ namespace server::jolt
             physics_system->Update(cDeltaTime, cCollisionSteps, temp_allocator, job_system);
 
             recorder->drawIfAvailable(physics_system);
+
+            posSignal(body_interface.GetCenterOfMassPosition(sphere_id));
         }
 
         // delete logic
