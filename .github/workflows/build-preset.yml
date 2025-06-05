@@ -15,14 +15,15 @@ jobs:
     container: debian:trixie
     steps:
 
+    - name: Install toolchain
+      run: apt update && apt install -y cmake git nodejs ninja-build rustup unzip python3
+
     - name: Checkout repository and submodules
       uses: actions/checkout@v4
       with:
         submodules: 'recursive'
 
-    - name: Install toolchain
-      run: apt update && apt install -y cmake git nodejs ninja-build rustup unzip python3
-    
+  
       # linux-only
     - name: "(linux): Install build-essential"
       run: apt install -y build-essential
