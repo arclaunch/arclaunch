@@ -27,6 +27,9 @@ if (WIN32)
     set(INTERPROCEDURAL_OPTIMIZATION OFF)
     set(CMAKE_EXE_LINKER_FLAGS "-Wl,-allow-multiple-definition -static-libgcc -static-libstdc++") # for executable projects
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition -static-libgcc -static-libstdc++") # for library projects
+
+    # prevent "try_run() invoked in cross-compiling mode" error from CMake
+    set(BOOST_CHARCONV_QUADMATH_FOUND FALSE CACHE BOOL "boost charconv could find quadmath")
 endif()
 
 
