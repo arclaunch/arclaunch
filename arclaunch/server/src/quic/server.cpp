@@ -1,7 +1,11 @@
 #include "quic/server.hpp"
 
 #include <fcntl.h>
+#ifndef WIN32
 #include <netdb.h>
+#else
+#include <ws2tcpip.h>
+#endif
 
 #include <iostream>
 #include <string.h>
@@ -259,7 +263,7 @@ namespace quic
             socklen_t peer_addr_len = sizeof(peer_addr);
             memset(&peer_addr, 0, peer_addr_len);
 
-            ssize_t read = recvfrom(sock, buf, sizeof(buf), 0,
+            ssize_t read = recvfrom(sock, (char *)buf, sizeof(buf), 0,
                                     (struct sockaddr *)&peer_addr,
                                     &peer_addr_len);
 
@@ -319,7 +323,7 @@ namespace quic
                         continue;
                     }
 
-                    ssize_t sent = sendto(conns->sock, out, written, 0,
+                    ssize_t sent = sendto(conns->sock, (char *)out, written, 0,
                                           (struct sockaddr *)&peer_addr,
                                           peer_addr_len);
                     if (sent != written)
@@ -359,7 +363,7 @@ namespace quic
                         continue;
                     }
 
-                    ssize_t sent = sendto(conns->sock, out, written, 0,
+                    ssize_t sent = sendto(conns->sock, (char *)out, written, 0,
                                           (struct sockaddr *)&peer_addr,
                                           peer_addr_len);
                     if (sent != written)
