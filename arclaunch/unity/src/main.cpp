@@ -12,11 +12,11 @@ typedef void (*cbPos)(const float x, const float y, const float z);
 server::jolt::Provider *joltProvider;
 
 boost::signals2::signal<void(const char *)>
-    signal;
+    exampleSignal;
 
 AC_API void RegisterCallback(cbChar callback)
 {
-    boost::signals2::connection conn = signal.connect(
+    boost::signals2::connection conn = exampleSignal.connect(
         [callback](const char *msg)
         {
             callback(msg);
@@ -25,7 +25,7 @@ AC_API void RegisterCallback(cbChar callback)
 
 AC_API void TriggerCallback()
 {
-    signal("Hello from C++!");
+    exampleSignal("Hello from C++!");
 };
 
 AC_API void SetupSim(cbPos callback)
