@@ -16,20 +16,25 @@ set(CMAKE_CXX_STANDARD 17)
 set(OPENSSL_NO_ASM TRUE)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# If using windows, make it a static binary to avoid errors around nor having libgcc[..].dll, libstdcc++[..].dll
-if (WIN32)
-    set(BUILD_SHARED_LIBS OFF)
-    set(CMAKE_EXE_LINKER_FLAGS "-static") # for executable projects
-    set(CMAKE_SHARED_LINKER_FLAGS "-static") # for library projects
-endif()
 
+set(BUILD_SHARED_LIBS OFF)
 add_compile_options(-Wno-error) # boringssl
 add_subdirectory(lib/boringssl)
+set(BUILD_SHARED_LIBS ON)
+
+# If using windows, make it a static binary to avoid errors around nor having libgcc[..].dll, libstdcc++[..].dll
+if (WIN32)
+    set(INTERPROCEDURAL_OPTIMIZATION OFF)
+    set(CMAKE_EXE_LINKER_FLAGS "-Wl,-allow-multiple-definition -static-libgcc -static-libstdc++") # for executable projects
+    set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-allow-multiple-definition -static-libgcc -static-libstdc++") # for library projects
+endif()
+
 
 # Cloudflare QUICHE (via corrosion)
 include(cmake/quiche.cmake)
 corrosion_set_env_vars(quiche "QUICHE_BSSL_PATH=${CMAKE_CURRENT_BINARY_DIR}/lib/boringssl/")
-corrosion_add_target_local_rustflags(quiche "-Clink-args=-lstdc++")
+corrosion_add_target_local_rustflags(quiche "-Clink-args=-static-libgcc -static-libstdc++")
+corrosion_set_linker(quiche ${CMAKE_CXX_COMPILER}) # so that -static-libstdc++ flag is understood <https://github.com/msys2/MINGW-packages/issues/6163#issuecomment-2094285343>
 
 # CLI11
 add_subdirectory(lib/cli11)
@@ -59,7 +64,7 @@ target_sources(server
 )
 target_include_directories(server PUBLIC ${CMAKE_CURRENT_LIST_DIR}/arclaunch/server/include)
 
-target_link_libraries(server PUBLIC quiche-api CLI11::CLI11 event_shared uthash arclaunch::physics)
+target_link_libraries(server PUBLIC quiche-api CLI11::CLI11 event_core_shared event_shared uthash arclaunch::physics)
 
 
 include(ExternalProject)
