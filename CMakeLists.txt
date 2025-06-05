@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR) # CLI11 min requirement of CMake 3.10
 
-set(Rust_RUSTUP_INSTALL_MISSING_TARGET ON)
+set(Rust_RUSTUP_INSTALL_MISSING_TARGET ON CACHE BOOL "Install missing rustup targets automatically")
 
 project(
     arclaunch
@@ -33,8 +33,10 @@ endif()
 # Cloudflare QUICHE (via corrosion)
 include(cmake/quiche.cmake)
 corrosion_set_env_vars(quiche "QUICHE_BSSL_PATH=${CMAKE_CURRENT_BINARY_DIR}/lib/boringssl/")
-corrosion_add_target_local_rustflags(quiche "-Clink-args=-static-libgcc -static-libstdc++")
-corrosion_set_linker(quiche ${CMAKE_CXX_COMPILER}) # so that -static-libstdc++ flag is understood <https://github.com/msys2/MINGW-packages/issues/6163#issuecomment-2094285343>
+if(NOT ANDROID)
+    corrosion_add_target_local_rustflags(quiche "-Clink-args=-static-libgcc -static-libstdc++")
+    corrosion_set_linker(quiche ${CMAKE_CXX_COMPILER}) # so that -static-libstdc++ flag is understood <https://github.com/msys2/MINGW-packages/issues/6163#issuecomment-2094285343>
+endif()
 
 # CLI11
 add_subdirectory(lib/cli11)
