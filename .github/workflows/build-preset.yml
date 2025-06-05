@@ -41,7 +41,6 @@ jobs:
       if: ${{ inputs.preset == 'android-cross' }}
       with:
         ndk-version: r27c
-        link-to-sdk: true
       
       # common (cont'd)
     - name: Install Rust
