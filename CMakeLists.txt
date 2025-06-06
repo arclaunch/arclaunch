@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.10 FATAL_ERROR) # CLI11 min requirement of CMak
 
 set(Rust_RUSTUP_INSTALL_MISSING_TARGET ON CACHE BOOL "Install missing rustup targets automatically")
 
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE STRING "install prefix" FORCE)
+endif()
+
 project(
     arclaunch
     VERSION 0.0.1
@@ -19,7 +23,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(BUILD_SHARED_LIBS OFF)
 add_compile_options(-Wno-error) # boringssl
-add_subdirectory(lib/boringssl)
+add_subdirectory(lib/boringssl EXCLUDE_FROM_ALL)
 set(BUILD_SHARED_LIBS ON)
 
 # If using windows, make it a static binary to avoid errors around nor having libgcc[..].dll, libstdcc++[..].dll
@@ -42,18 +46,18 @@ if(NOT ANDROID)
 endif()
 
 # CLI11
-add_subdirectory(lib/cli11)
+add_subdirectory(lib/cli11 EXCLUDE_FROM_ALL)
 
 
 # Add Jolt
-add_subdirectory(lib/joltphysics/Build)
+add_subdirectory(lib/joltphysics/Build EXCLUDE_FROM_ALL)
 
 # Add Boost
-add_subdirectory(lib/boost)
+add_subdirectory(lib/boost EXCLUDE_FROM_ALL)
 
 # libevent
 set(EVENT__DISABLE_OPENSSL ON)
-add_subdirectory(lib/event)
+add_subdirectory(lib/event EXCLUDE_FROM_ALL)
 
 
 add_library(uthash INTERFACE)
@@ -80,7 +84,51 @@ ExternalProject_Add(
     CMAKE_ARGS -DTARGET_PERFORMANCE_TEST=ON -DTARGET_VIEWER=ON -DENABLE_INSTALL=OFF -DCMAKE_BUILD_TYPE=Release
     INSTALL_COMMAND ""
 )
+set_target_properties(jolt_ext PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 
 add_subdirectory(arclaunch/physics)
 add_subdirectory(arclaunch/unity)
+
+
+
+set(CPACK_COMPONENTS_ALL "")
+macro(install_component name)
+    set(targets ${ARGV})
+    list(REMOVE_AT targets 0)
+    string(STRIP "${name}" name_strip)
+    install(TARGETS ${targets}
+        COMPONENT "${name_strip}"
+        # RUNTIME_DEPENDENCIES
+        RUNTIME DESTINATION ${name_strip}
+        LIBRARY DESTINATION ${name_strip}
+    )
+    if (CPACK_COMPONENTS_ALL STREQUAL "")
+        set(CPACK_COMPONENTS_ALL "${name_strip}")
+    else()
+        set(CPACK_COMPONENTS_ALL "${CPACK_COMPONENTS_ALL};${name_strip}")
+    endif()
+    message("Added component ${name_strip} with targets '${targets}'")
+endmacro()
+
+
+install_component(unity arclaunch_unity arclaunch_physics Jolt)
+#install_component(server server arclaunch_physics Jolt event_core_shared)
+
+# TODO: quiche not included in server build...
+#corrosion_install(TARGETS quiche DESTINATION server COMPONENT server)
+
+# Common CPack settings
+
+string(TOLOWER "${PROJECT_NAME}-${CMAKE_SYSTEM_NAME}" CPACK_PACKAGE_FILE_NAME)
+
+# cmake components are default ${CMAKE_PACKAGE_FILE_NAME}-<component>
+
+set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
+set(CPACK_COMPONENT_INCLUDE_TOPLEVEL_DIRECTORY OFF)
+set(CPACK_GENERATOR "ZIP")
+set(CPACK_COMPONENTS_GROUPING ONE_PER_GROUP)
+set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
+set(CPACK_PACKAGE_DIRECTORY ${CMAKE_BINARY_DIR}/pkg)
+
+include(CPack)
