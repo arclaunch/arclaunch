@@ -1,0 +1,72 @@
+name: preset
+
+on:
+  workflow_call:
+    inputs:
+      preset:
+        required: true
+        type: string
+
+jobs:
+  preset:
+    # set name based on inputs, see discussion at https://github.com/orgs/community/discussions/63118#discussioncomment-7978629
+    name: ${{ inputs.preset }}
+    runs-on: ubuntu-latest
+    container: debian:trixie
+    steps:
+
+    - name: Install toolchain
+      run: apt update && apt install -y cmake git nodejs ninja-build rustup unzip python3
+
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+
+  
+      # linux-only
+    - name: "(linux): Install build-essential"
+      run: apt install -y build-essential
+      if: ${{ inputs.preset == 'linux' }}
+
+      # windows-only
+    - name: "(windows-cross): Install mingw"
+      run: apt install -y g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64
+      if: ${{ inputs.preset == 'windows-cross' }}
+
+      # android-only
+    - name: "(android-cross): Install ndk"
+      uses: nttld/setup-ndk@ba255cfe086fe76c82c0aff3c43560cdeb105f99
+      id: setup-ndk
+      if: ${{ inputs.preset == 'android-cross' }}
+      with:
+        ndk-version: r27c
+      
+      # common (cont'd)
+    - name: Install Rust
+      run: rustup default stable
+
+    - name: Configure
+      run: cmake -B build . --preset ${{ inputs.preset }}
+      env:
+        ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
+
+    - name: Build
+      run: cmake --build build --parallel $(nproc) --target arclaunch_unity server install
+    
+    - name: Run CPack
+      run: cd build && cpack
+    
+    # upload each zip in pkg folder as own artifact (modified)
+    # https://github.com/actions/upload-artifact/issues/331#issuecomment-2799552327
+    - name: Setup gh actions artifact client
+      uses: lhotari/gh-actions-artifact-client@a4d3206c0efe9a65f9857b40a37b1c8d0c0b1733
+
+    - name: Upload artifacts
+      run: |
+        cd build/pkg && 
+        find . -maxdepth 1 -mindepth 1 -type f -name "*.zip" ! -name "*.src.zip" | while read -r file; do
+          name=$(basename "$file")
+          echo "Uploading $name, file: $file"
+          cat "$file" | gh-actions-artifact-client.js upload "${name}" --retentionDays=7
+        done
