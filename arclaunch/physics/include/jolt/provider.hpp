@@ -67,14 +67,14 @@ namespace server::jolt
         ::physics::jolt::ObjectVsBroadPhaseLayerFilterImpl *object_vs_broad_phase_layer_filter;
         ::physics::jolt::object::ObjectLayerPairFilterImpl *object_vs_object_layer_filter;
 
-        JPH::PhysicsSystem *physics_system;
-
-        ::physics::jolt::debug::Recorder *recorder;
-
     public:
         Provider();
-        void initial();
-        void start();
+
+        void update(float delta_time, int steps);
+
+        JPH::PhysicsSystem *physics_system;
+        ::physics::jolt::debug::Recorder *recorder;
+
         boost::signals2::signal<void(const JPH::Vec3)> posSignal;
     };
 };

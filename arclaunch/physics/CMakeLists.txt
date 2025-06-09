@@ -16,6 +16,8 @@ target_sources(${PROJECT}
         ${CMAKE_CURRENT_LIST_DIR}/src/jolt/provider.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/jolt/broad_phase.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/jolt/debug/recorder.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/simulation/base.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/simulation/plates.cpp
 )
 
 

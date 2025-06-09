@@ -5,6 +5,7 @@
 #include "quic/server.hpp"
 
 #include "jolt/provider.hpp"
+#include "simulation/plates.hpp"
 
 int main(int argc, char **argv)
 {
@@ -33,10 +34,17 @@ int main(int argc, char **argv)
     // event_base_dispatch(base);
 
     // jolt time
-    server::jolt::Provider joltProvider;
-    joltProvider.initial();
+    server::jolt::Provider *joltProvider = new server::jolt::Provider();
+    physics::simulation::PlatesOptions *opt = new physics::simulation::PlatesOptions();
+    physics::simulation::PlatesSimulation *sim = new physics::simulation::PlatesSimulation(joltProvider);
 
-    std::wcout << "Shutting down" << std::endl;
+    std::wcout << "EFS:" << opt->electric_field_strength << std::endl;
+    sim->setup((physics::simulation::BaseOptions *)opt);
+
+    sim->execute();
+
+    std::wcout
+        << "Shutting down" << std::endl;
 
     return EXIT_SUCCESS;
 };
