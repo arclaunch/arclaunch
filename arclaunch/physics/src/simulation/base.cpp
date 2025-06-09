@@ -13,16 +13,20 @@ namespace physics::simulation
 
     void BaseSimulation::execute()
     {
-        unsigned int step = 0;
         while (step < options->step_amount)
         {
-            ++step;
-
-            preStep(step);
-
-            provider->update(options->step_delta_time, options->step_collision_amount); // calls debug draw if avail
-
-            postStep(step);
+            tick();
         };
     };
+
+    void BaseSimulation::tick()
+    {
+
+        ++step;
+        preStep(step);
+
+        provider->update(options->step_delta_time, options->step_collision_amount); // calls debug draw if avail
+
+        postStep(step);
+    }
 }

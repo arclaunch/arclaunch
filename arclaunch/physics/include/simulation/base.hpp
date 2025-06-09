@@ -1,7 +1,11 @@
 #ifndef SIMULATION_BASE_HPP_
 #define SIMULATION_BASE_HPP_
 
+#include <boost/signals2.hpp>
+
 #include "jolt/provider.hpp"
+
+#include "simulation/event/base.hpp"
 
 namespace physics::simulation
 {
@@ -35,6 +39,8 @@ namespace physics::simulation
     class BaseSimulation
     {
     protected:
+        unsigned int step = 0;
+
         BaseOptions *options;
         server::jolt::Provider *provider;
         inline JPH::BodyInterface &GetBodyInterface() { return provider->physics_system->GetBodyInterface(); };
@@ -49,6 +55,9 @@ namespace physics::simulation
         virtual void postStep(int step) = 0;
 
         void execute();
+        void tick();
+
+        boost::signals2::signal<void(const physics::simulation::event::BaseEvent *)> eventSignal;
     };
 }
 

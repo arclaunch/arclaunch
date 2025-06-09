@@ -74,8 +74,6 @@ namespace server::jolt
 
         JPH::PhysicsSystem *physics_system;
         ::physics::jolt::debug::Recorder *recorder;
-
-        boost::signals2::signal<void(const JPH::Vec3)> posSignal;
     };
 };
 

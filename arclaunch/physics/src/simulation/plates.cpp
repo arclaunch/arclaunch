@@ -8,6 +8,8 @@
 
 #include <iostream> // std::wcout
 
+#include "simulation/event/body.hpp"
+
 using server::jolt::Provider;
 
 namespace physics::simulation
@@ -64,6 +66,9 @@ namespace physics::simulation
         provider->physics_system->OptimizeBroadPhase();
 
         // step can start
+
+        event::BodyEvent *ev = new event::BodyEvent(charge);
+        eventSignal(ev);
     };
 
     void PlatesSimulation::preStep(int step)
@@ -94,5 +99,9 @@ namespace physics::simulation
         std::wcout << "Step " << step << ": Position = (" << position.GetX() << ", " << position.GetY() << ", " << position.GetZ() << "), Velocity = (" << velocity.GetX() << ", " << velocity.GetY() << ", " << velocity.GetZ() << ")" << std::endl;
 
         // posSignal(body_interface.GetCenterOfMassPosition(charge_id));
+
+        // iterate over each body
+        event::BodyEvent *ev = new event::BodyEvent(charge);
+        eventSignal(ev);
     };
 }

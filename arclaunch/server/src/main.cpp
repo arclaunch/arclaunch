@@ -42,6 +42,8 @@ int main(int argc, char **argv)
     sim->setup((physics::simulation::BaseOptions *)opt);
 
     sim->execute();
+    sim->eventSignal.connect([callback](const physics::simulation::event::BaseEvent ev)
+                             { callback(ev); });
 
     std::wcout
         << "Shutting down" << std::endl;

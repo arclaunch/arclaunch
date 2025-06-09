@@ -3,9 +3,11 @@
 #include <boost/signals2.hpp>
 
 #include "jolt/provider.hpp"
+#include "simulation/plates.hpp"
 
 typedef void (*cbChar)(const char *message);
-typedef void (*cbPos)(const float x, const float y, const float z);
+
+typedef void (*cbEvent)(const physics::simulation::event::BaseEvent *ev);
 
 // Signal type
 
@@ -28,16 +30,27 @@ AC_API void TriggerCallback()
     exampleSignal("Hello from C++!");
 };
 
-AC_API void SetupSim(cbPos callback)
+physics::simulation::PlatesSimulation *sim;
+
+AC_API void SetupSim(cbEvent callback)
 {
 
     joltProvider = new server::jolt::Provider();
-    joltProvider->posSignal.connect([callback](const JPH::Vec3 vec)
-                                    { callback(vec.GetX(), vec.GetY(), vec.GetZ()); });
+    physics::simulation::PlatesOptions *opt = new physics::simulation::PlatesOptions();
+    sim = new physics::simulation::PlatesSimulation(joltProvider);
+    sim->eventSignal.connect([callback](const physics::simulation::event::BaseEvent *ev)
+                             { callback(ev); });
+    sim->setup((physics::simulation::BaseOptions *)opt);
 };
 
 AC_API void RunSim()
 {
 
-    joltProvider->initial();
+    sim->execute();
+};
+
+AC_API void TickSim()
+{
+
+    sim->tick();
 };
