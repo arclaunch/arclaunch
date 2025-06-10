@@ -93,8 +93,10 @@ namespace physics::simulation
         JPH::RVec3 position = body_interface.GetCenterOfMassPosition(charge_id);
         JPH::Vec3 velocity = body_interface.GetLinearVelocity(charge_id);
 
+#ifdef JPH_DEBUG_RENDERER
         provider->recorder->mDebugRenderer->DrawArrow(body_interface.GetCenterOfMassPosition(charge_id), body_interface.GetCenterOfMassPosition(charge_id) + velocity, JPH::Color::sRed, 0.01f);
         provider->recorder->mDebugRenderer->DrawCoordinateSystem(body_interface.GetCenterOfMassTransform(charge_id), 0.5f);
+#endif
 
         std::wcout << "Step " << step << ": Position = (" << position.GetX() << ", " << position.GetY() << ", " << position.GetZ() << "), Velocity = (" << velocity.GetX() << ", " << velocity.GetY() << ", " << velocity.GetZ() << ")" << std::endl;
 
