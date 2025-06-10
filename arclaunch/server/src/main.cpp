@@ -40,10 +40,7 @@ int main(int argc, char **argv)
 
     std::wcout << "EFS:" << opt->electric_field_strength << std::endl;
     sim->setup((physics::simulation::BaseOptions *)opt);
-
     sim->execute();
-    sim->eventSignal.connect([callback](const physics::simulation::event::BaseEvent ev)
-                             { callback(ev); });
 
     std::wcout
         << "Shutting down" << std::endl;
