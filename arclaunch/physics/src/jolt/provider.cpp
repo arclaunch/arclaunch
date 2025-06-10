@@ -22,9 +22,6 @@
 // If you want your code to compile using single or double precision write 0.0_r to get a Real value that compiles to double or float depending if JPH_DOUBLE_PRECISION is set or not.
 using namespace JPH::literals;
 
-constexpr float operator""_uc(long double inValue) { return float(inValue * pow(10, -6)); };
-constexpr float operator""_ukg(long double inValue) { return float(inValue * pow(10, -6)); };
-
 namespace server::jolt
 {
 
