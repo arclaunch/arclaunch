@@ -15,3 +15,9 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 # for libraries and headers in the target directories
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+
+
+# manually set objdump when cross-compiling, see
+# https://gitlab.kitware.com/cmake/cmake/-/issues/20854
+set(CMAKE_OBJDUMP ${CMAKE_FIND_ROOT_PATH}/bin/objdump)
+set(CMAKE_GET_RUNTIME_DEPENDENCIES_PLATFORM windows+pe)
