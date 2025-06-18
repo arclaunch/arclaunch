@@ -11,7 +11,8 @@ typedef void (*cbEvent)(const physics::simulation::event::BaseEvent *ev);
 
 // Signal type
 
-server::jolt::Provider *joltProvider;
+server::jolt::Provider *
+    joltProvider;
 
 boost::signals2::signal<void(const char *)>
     exampleSignal;
@@ -32,11 +33,10 @@ AC_API void TriggerCallback()
 
 physics::simulation::PlatesSimulation *sim;
 
-AC_API void SetupSim(cbEvent callback)
+AC_API void SetupSim(physics::simulation::PlatesOptions *opt, cbEvent callback)
 {
 
     joltProvider = new server::jolt::Provider();
-    physics::simulation::PlatesOptions *opt = new physics::simulation::PlatesOptions();
     sim = new physics::simulation::PlatesSimulation(joltProvider);
     sim->eventSignal.connect([callback](const physics::simulation::event::BaseEvent *ev)
                              { callback(ev); });

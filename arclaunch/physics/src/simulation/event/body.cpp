@@ -10,5 +10,6 @@ namespace physics::simulation::event
         this->idSequenceNum = bodyId.GetSequenceNumber();
         this->position = body->GetCenterOfMassPosition();
         this->transform = body->GetCenterOfMassTransform();
+        this->data = body->GetUserData();
     }
 };

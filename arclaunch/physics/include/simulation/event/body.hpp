@@ -16,6 +16,7 @@ namespace physics::simulation::event
         uint32_t idSequenceNum;
         JPH::RVec3 position;
         JPH::RMat44 transform;
+        uint64_t data;
 
     public:
         BodyEvent(JPH::Body *body);
@@ -25,6 +26,7 @@ namespace physics::simulation::event
         inline uint32_t getIdSequenceNum() { return this->idSequenceNum; };
         inline JPH::RVec3 getPosition() { return this->position; };
         inline JPH::RMat44 getTransform() { return this->transform; };
+        inline uint64_t getData() { return this->data; };
     };
 }
 

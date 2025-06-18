@@ -21,19 +21,12 @@ namespace physics::simulation
         operator float() const { return f; };
     };
 
-    class BaseOptions
+    struct BaseOptions
     {
-    public:
         int step_amount = 300;
         int step_collision_amount = 1;
         float step_delta_time = DeltaTimeStep::FPS_60;
         bool debug_recorder_enabled = true;
-
-        // We need this or any other virtual member to make Base polymorphic
-        // (so we can use dynamic_cast or boost casting)
-        // https://stackoverflow.com/a/36739219 (polymorphism)
-        // https://www.boost.org/doc/libs/1_47_0/libs/conversion/cast.htm#Polymorphic_cast
-        virtual ~BaseOptions() {}
     };
 
     class BaseSimulation
@@ -44,6 +37,8 @@ namespace physics::simulation
         BaseOptions *options;
         server::jolt::Provider *provider;
         inline JPH::BodyInterface &GetBodyInterface() { return provider->physics_system->GetBodyInterface(); };
+
+        void emitBodyEvents();
 
     public:
         BaseSimulation(server::jolt::Provider *provider);

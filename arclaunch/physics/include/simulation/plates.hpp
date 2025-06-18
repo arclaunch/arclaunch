@@ -6,9 +6,8 @@
 
 namespace physics::simulation
 {
-    class PlatesOptions : public BaseOptions
+    struct PlatesOptions : BaseOptions
     {
-    public:
         float electric_field_strength = 10.0f;
         float mass_kg = 1.0_ukg;
         float sphere_charge = 0.5_uc;
@@ -23,15 +22,21 @@ namespace physics::simulation
         float charge_radius = 0.05f;
         float charge_position_offset = 0.3f;
     };
+
     class PlatesSimulation : public BaseSimulation
     {
     private:
+        const static uint64_t TYPE_PLATE_POS = 1;
+        const static uint64_t TYPE_PLATE_NEG = 2;
+        const static uint64_t TYPE_CHARGE = 3;
+        const static uint64_t TYPE_BOUNDARY = 4;
+
         JPH::Body *charge = nullptr;
 
         inline PlatesOptions *
         getOptions()
         {
-            return dynamic_cast<PlatesOptions *>(this->options);
+            return static_cast<PlatesOptions *>(this->options);
         };
 
     public:

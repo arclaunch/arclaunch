@@ -20,6 +20,17 @@ namespace physics::simulation
 
         JPH::BodyInterface &body_interface = GetBodyInterface();
 
+        // Create boundary box
+        JPH::BoxShapeSettings boundarySettings(JPH::Vec3(getOptions()->plate_size_x / 2, getOptions()->plate_size_y / 2, getOptions()->plate_distance_between / 2));
+        boundarySettings.SetEmbedded();
+        JPH::ShapeSettings::ShapeResult boundarySr = boundarySettings.Create();
+        JPH::ShapeRefC boundaryShape = boundarySr.Get();
+
+        JPH::BodyCreationSettings boundaryBodySettings(boundaryShape, JPH::RVec3(getOptions()->plate_size_x / 2, getOptions()->plate_size_y / 2, getOptions()->plate_distance_between / 2), JPH::Quat::sIdentity(), JPH::EMotionType::Static, ::physics::jolt::object::layers::NON_MOVING);
+        boundaryBodySettings.mIsSensor = true;
+        JPH::BodyID boundaryBodyId = body_interface.CreateAndAddBody(boundaryBodySettings, JPH::EActivation::Activate);
+        body_interface.SetUserData(boundaryBodyId, TYPE_BOUNDARY);
+
         // Create the shape for the plates
         JPH::BoxShapeSettings plane1(JPH::Vec3(getOptions()->plate_size_x / 2, getOptions()->plate_size_y / 2, getOptions()->plate_thickness));
         plane1.SetEmbedded();
@@ -29,10 +40,12 @@ namespace physics::simulation
         // Add positive plate (z = 0)
         JPH::BodyCreationSettings positive_plane_settings(plane1_shape, JPH::RVec3(getOptions()->plate_size_x / 2, getOptions()->plate_size_y / 2, 0), JPH::Quat::sIdentity(), JPH::EMotionType::Static, ::physics::jolt::object::layers::NON_MOVING);
         JPH::BodyID positive_plane_body = body_interface.CreateAndAddBody(positive_plane_settings, JPH::EActivation::Activate);
+        body_interface.SetUserData(positive_plane_body, TYPE_PLATE_POS);
 
         // Add negative plate (z = distance between)
         JPH::BodyCreationSettings negative_plane_settings(plane1_shape, JPH::RVec3(getOptions()->plate_size_x / 2, getOptions()->plate_size_y / 2, getOptions()->plate_distance_between), JPH::Quat::sIdentity(), JPH::EMotionType::Static, ::physics::jolt::object::layers::NON_MOVING);
         JPH::BodyID negative_plane_body = body_interface.CreateAndAddBody(negative_plane_settings, JPH::EActivation::Activate);
+        body_interface.SetUserData(negative_plane_body, TYPE_PLATE_NEG);
 
         // Sphere settings
         JPH::RVec3 charge_origin(getOptions()->charge_position_offset, getOptions()->charge_position_offset, getOptions()->plate_distance_between / 2);
@@ -50,6 +63,7 @@ namespace physics::simulation
         // Sphere: create the body (don't use createandadd so we get the body object)
         charge = body_interface.CreateBody(charge_settings); // Note that if we run out of bodies this can return nullptr
         JPH::BodyID charge_id = charge->GetID();
+        charge->SetUserData(TYPE_CHARGE);
         body_interface.AddBody(charge_id, JPH::EActivation::Activate);
 
         // Disable linear damping for charge using it's Body object
@@ -66,9 +80,7 @@ namespace physics::simulation
         provider->physics_system->OptimizeBroadPhase();
 
         // step can start
-
-        event::BodyEvent *ev = new event::BodyEvent(charge);
-        eventSignal(ev);
+        emitBodyEvents();
     };
 
     void PlatesSimulation::preStep(int step)
@@ -102,8 +114,6 @@ namespace physics::simulation
 
         // posSignal(body_interface.GetCenterOfMassPosition(charge_id));
 
-        // iterate over each body
-        event::BodyEvent *ev = new event::BodyEvent(charge);
-        eventSignal(ev);
+        emitBodyEvents();
     };
 }
