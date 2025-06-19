@@ -150,10 +150,8 @@ namespace physics::simulation
 
         if (!isInBoundary || isContactingPlates)
         {
-            std::wcout << "NOT IN BOUNDS\n";
             event::EndEvent *ev = new event::EndEvent(step, false);
             eventSignal(ev);
-            exit(1);
         }
     };
 }
