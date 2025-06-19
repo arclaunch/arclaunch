@@ -14,12 +14,13 @@ namespace physics::simulation
         float velocityX = 2.0f;
 
         // not expected to change but here for flexiblity
-        float plate_size_x = 3.0f;
-        float plate_size_y = 2.0f;
-        float plate_distance_between = 3.0f;
+        float plate_size_x = 8.0f;
+        float plate_size_y = 8.0f;
+        float plate_distance_between = 8.0f;
         float plate_thickness = 0.1f;
 
-        float charge_radius = 0.05f;
+        // time step 5 tested with 0.04 through 0.08 inclusive
+        float charge_radius = 0.05f; // 7.95 @ 0.05f (passing test case);
         float charge_position_offset = 0.3f;
     };
 

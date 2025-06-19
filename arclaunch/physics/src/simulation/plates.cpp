@@ -37,19 +37,21 @@ namespace physics::simulation
         body_interface.AddBody(boundaryBodyId, JPH::EActivation::Activate);
         body_interface.SetUserData(boundaryBodyId, TYPE_BOUNDARY);
 
+        float plateHalfThickness = getOptions()->plate_thickness / 2;
+
         // Create the shape for the plates
-        JPH::BoxShapeSettings plane1(JPH::Vec3(getOptions()->plate_size_x / 2, getOptions()->plate_size_y / 2, getOptions()->plate_thickness));
+        JPH::BoxShapeSettings plane1(JPH::Vec3(getOptions()->plate_size_x / 2, getOptions()->plate_size_y / 2, plateHalfThickness));
         plane1.SetEmbedded();
         JPH::ShapeSettings::ShapeResult plane1_sr = plane1.Create();
         JPH::ShapeRefC plane1_shape = plane1_sr.Get();
 
         // Add positive plate (z = 0)
-        JPH::BodyCreationSettings positive_plane_settings(plane1_shape, JPH::RVec3(getOptions()->plate_size_x / 2, getOptions()->plate_size_y / 2, 0), JPH::Quat::sIdentity(), JPH::EMotionType::Static, ::physics::jolt::object::layers::NON_MOVING);
+        JPH::BodyCreationSettings positive_plane_settings(plane1_shape, JPH::RVec3(getOptions()->plate_size_x / 2, getOptions()->plate_size_y / 2, -plateHalfThickness), JPH::Quat::sIdentity(), JPH::EMotionType::Static, ::physics::jolt::object::layers::NON_MOVING);
         positive_plane_body = body_interface.CreateAndAddBody(positive_plane_settings, JPH::EActivation::Activate);
         body_interface.SetUserData(positive_plane_body, TYPE_PLATE_POS);
 
         // Add negative plate (z = distance between)
-        JPH::BodyCreationSettings negative_plane_settings(plane1_shape, JPH::RVec3(getOptions()->plate_size_x / 2, getOptions()->plate_size_y / 2, getOptions()->plate_distance_between), JPH::Quat::sIdentity(), JPH::EMotionType::Static, ::physics::jolt::object::layers::NON_MOVING);
+        JPH::BodyCreationSettings negative_plane_settings(plane1_shape, JPH::RVec3(getOptions()->plate_size_x / 2, getOptions()->plate_size_y / 2, getOptions()->plate_distance_between + plateHalfThickness), JPH::Quat::sIdentity(), JPH::EMotionType::Static, ::physics::jolt::object::layers::NON_MOVING);
         negative_plane_body = body_interface.CreateAndAddBody(negative_plane_settings, JPH::EActivation::Activate);
         body_interface.SetUserData(negative_plane_body, TYPE_PLATE_NEG);
 
@@ -65,6 +67,7 @@ namespace physics::simulation
         // Apply mass properties to charge settings
         charge_settings.mMassPropertiesOverride = msp;
         charge_settings.mOverrideMassProperties = JPH::EOverrideMassProperties::CalculateInertia; // use provided mass to calc inertia
+        charge_settings.mMotionQuality = JPH::EMotionQuality::LinearCast;
 
         // Sphere: create the body (don't use createandadd so we get the body object)
         charge = body_interface.CreateBody(charge_settings); // Note that if we run out of bodies this can return nullptr
@@ -133,22 +136,24 @@ namespace physics::simulation
             JPH::RVec3::sZero(),
             collector);
 
-        bool isInBounds = false;
+        bool isInBoundary = false;
+        bool isContactingPlates = false;
         for (const auto result : collector.mHits)
         {
-            if (result.mBodyID2 == boundaryBody->GetID())
-                isInBounds = true;
 
-            if (result.mBodyID2 == positive_plane_body || result.mBodyID2 == negative_plane_body)
-            {
-                isInBounds = false;
-            }
+            if (!isInBoundary && result.mBodyID2 == boundaryBody->GetID())
+                isInBoundary = true;
+
+            if (!isContactingPlates && ((result.mBodyID2 == positive_plane_body) || (result.mBodyID2 == negative_plane_body)))
+                isContactingPlates = true;
         };
 
-        if (!isInBounds)
+        if (!isInBoundary || isContactingPlates)
         {
+            std::wcout << "NOT IN BOUNDS\n";
             event::EndEvent *ev = new event::EndEvent(step, false);
             eventSignal(ev);
+            exit(1);
         }
     };
 }
