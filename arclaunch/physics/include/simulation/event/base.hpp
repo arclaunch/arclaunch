@@ -7,6 +7,7 @@ namespace physics::simulation::event
     {
         UNKNOWN,
         BODY,
+        END
     };
 
     class BaseEvent

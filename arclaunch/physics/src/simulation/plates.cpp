@@ -6,9 +6,13 @@
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 
+#include <Jolt/Physics/Collision/CollisionCollectorImpl.h>
+#include <Jolt/Physics/Collision/CollideShape.h>
+
 #include <iostream> // std::wcout
 
 #include "simulation/event/body.hpp"
+#include "simulation/event/end.hpp"
 
 using server::jolt::Provider;
 
@@ -28,7 +32,9 @@ namespace physics::simulation
 
         JPH::BodyCreationSettings boundaryBodySettings(boundaryShape, JPH::RVec3(getOptions()->plate_size_x / 2, getOptions()->plate_size_y / 2, getOptions()->plate_distance_between / 2), JPH::Quat::sIdentity(), JPH::EMotionType::Static, ::physics::jolt::object::layers::NON_MOVING);
         boundaryBodySettings.mIsSensor = true;
-        JPH::BodyID boundaryBodyId = body_interface.CreateAndAddBody(boundaryBodySettings, JPH::EActivation::Activate);
+        boundaryBody = body_interface.CreateBody(boundaryBodySettings);
+        JPH::BodyID boundaryBodyId = boundaryBody->GetID();
+        body_interface.AddBody(boundaryBodyId, JPH::EActivation::Activate);
         body_interface.SetUserData(boundaryBodyId, TYPE_BOUNDARY);
 
         // Create the shape for the plates
@@ -39,17 +45,17 @@ namespace physics::simulation
 
         // Add positive plate (z = 0)
         JPH::BodyCreationSettings positive_plane_settings(plane1_shape, JPH::RVec3(getOptions()->plate_size_x / 2, getOptions()->plate_size_y / 2, 0), JPH::Quat::sIdentity(), JPH::EMotionType::Static, ::physics::jolt::object::layers::NON_MOVING);
-        JPH::BodyID positive_plane_body = body_interface.CreateAndAddBody(positive_plane_settings, JPH::EActivation::Activate);
+        positive_plane_body = body_interface.CreateAndAddBody(positive_plane_settings, JPH::EActivation::Activate);
         body_interface.SetUserData(positive_plane_body, TYPE_PLATE_POS);
 
         // Add negative plate (z = distance between)
         JPH::BodyCreationSettings negative_plane_settings(plane1_shape, JPH::RVec3(getOptions()->plate_size_x / 2, getOptions()->plate_size_y / 2, getOptions()->plate_distance_between), JPH::Quat::sIdentity(), JPH::EMotionType::Static, ::physics::jolt::object::layers::NON_MOVING);
-        JPH::BodyID negative_plane_body = body_interface.CreateAndAddBody(negative_plane_settings, JPH::EActivation::Activate);
+        negative_plane_body = body_interface.CreateAndAddBody(negative_plane_settings, JPH::EActivation::Activate);
         body_interface.SetUserData(negative_plane_body, TYPE_PLATE_NEG);
 
         // Sphere settings
         JPH::RVec3 charge_origin(getOptions()->charge_position_offset, getOptions()->charge_position_offset, getOptions()->plate_distance_between / 2);
-        JPH::BodyCreationSettings charge_settings(new JPH::SphereShape(getOptions()->charge_radius), charge_origin, JPH::Quat::sIdentity(), JPH::EMotionType::Dynamic, ::physics::jolt::object::layers::NON_MOVING); // temp non moving so no collide
+        JPH::BodyCreationSettings charge_settings(new JPH::SphereShape(getOptions()->charge_radius), charge_origin, JPH::Quat::sIdentity(), JPH::EMotionType::Dynamic, ::physics::jolt::object::layers::MOVING); // temp non moving so no collide
 
         // Sphere: mass settings
         // https://github.com/jrouwe/JoltPhysics/discussions/967#discussioncomment-8720550
@@ -75,6 +81,8 @@ namespace physics::simulation
 
         // Disable gravity for the charge
         body_interface.SetGravityFactor(charge_id, 0.0f);
+
+        // add event listyener
 
         // Finish setup - should be common;
         provider->physics_system->OptimizeBroadPhase();
@@ -115,5 +123,32 @@ namespace physics::simulation
         // posSignal(body_interface.GetCenterOfMassPosition(charge_id));
 
         emitBodyEvents();
+
+        ::JPH::AllHitCollisionCollector<::JPH::CollideShapeCollector> collector;
+        provider->physics_system->GetNarrowPhaseQuery().CollideShape(
+            charge->GetShape(),
+            JPH::Vec3::sReplicate(1.0f),
+            charge->GetCenterOfMassTransform(),
+            JPH::CollideShapeSettings(),
+            JPH::RVec3::sZero(),
+            collector);
+
+        bool isInBounds = false;
+        for (const auto result : collector.mHits)
+        {
+            if (result.mBodyID2 == boundaryBody->GetID())
+                isInBounds = true;
+
+            if (result.mBodyID2 == positive_plane_body || result.mBodyID2 == negative_plane_body)
+            {
+                isInBounds = false;
+            }
+        };
+
+        if (!isInBounds)
+        {
+            event::EndEvent *ev = new event::EndEvent(step, false);
+            eventSignal(ev);
+        }
     };
 }

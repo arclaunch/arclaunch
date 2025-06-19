@@ -19,6 +19,7 @@ target_sources(${PROJECT}
         ${CMAKE_CURRENT_LIST_DIR}/src/simulation/base.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/simulation/plates.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/simulation/event/body.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/simulation/event/end.cpp
 )
 
 

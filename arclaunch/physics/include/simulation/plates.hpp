@@ -32,6 +32,10 @@ namespace physics::simulation
         const static uint64_t TYPE_BOUNDARY = 4;
 
         JPH::Body *charge = nullptr;
+        JPH::Body *boundaryBody = nullptr;
+
+        JPH::BodyID positive_plane_body;
+        JPH::BodyID negative_plane_body;
 
         inline PlatesOptions *
         getOptions()

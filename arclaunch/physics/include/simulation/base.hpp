@@ -23,7 +23,7 @@ namespace physics::simulation
 
     struct BaseOptions
     {
-        int step_amount = 300;
+        int step_amount = 150;
         int step_collision_amount = 1;
         float step_delta_time = DeltaTimeStep::FPS_60;
         bool debug_recorder_enabled = true;
