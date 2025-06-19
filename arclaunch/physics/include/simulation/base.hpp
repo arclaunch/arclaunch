@@ -17,15 +17,16 @@ namespace physics::simulation
 
     public:
         static const DeltaTimeStep FPS_60;
+        static const DeltaTimeStep FPS_120;
 
         operator float() const { return f; };
     };
 
     struct BaseOptions
     {
-        int step_amount = 150;
+        int step_amount = 300;
         int step_collision_amount = 5; // 1 is too inaccurate for our purposes, further testing soon.
-        float step_delta_time = DeltaTimeStep::FPS_60;
+        float step_delta_time = DeltaTimeStep::FPS_120;
         bool debug_recorder_enabled = true;
     };
 

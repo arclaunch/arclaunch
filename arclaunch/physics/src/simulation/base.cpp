@@ -7,6 +7,7 @@ using server::jolt::Provider;
 namespace physics::simulation
 {
     const DeltaTimeStep DeltaTimeStep::FPS_60(1.0f / 60.0f);
+    const DeltaTimeStep DeltaTimeStep::FPS_120(1.0f / 120.0f);
 
     BaseSimulation::BaseSimulation(Provider *provider)
     {

@@ -20,6 +20,7 @@ namespace physics::simulation
 {
     void PlatesSimulation::setup(BaseOptions *options)
     {
+        float chargeY = 1.0f;
         this->options = static_cast<BaseOptions *>(options);
 
         JPH::BodyInterface &body_interface = GetBodyInterface();
@@ -56,7 +57,7 @@ namespace physics::simulation
         body_interface.SetUserData(negative_plane_body, TYPE_PLATE_NEG);
 
         // Sphere settings
-        JPH::RVec3 charge_origin(getOptions()->charge_position_offset, getOptions()->charge_position_offset, getOptions()->plate_distance_between / 2);
+        JPH::RVec3 charge_origin(getOptions()->charge_position_offset, chargeY, getOptions()->plate_distance_between / 2);
         JPH::BodyCreationSettings charge_settings(new JPH::SphereShape(getOptions()->charge_radius), charge_origin, JPH::Quat::sIdentity(), JPH::EMotionType::Dynamic, ::physics::jolt::object::layers::MOVING); // temp non moving so no collide
 
         // Sphere: mass settings
@@ -138,19 +139,28 @@ namespace physics::simulation
 
         bool isInBoundary = false;
         bool isContactingPlates = false;
+        JPH::Vec3 contactPoint;
         for (const auto result : collector.mHits)
         {
 
             if (!isInBoundary && result.mBodyID2 == boundaryBody->GetID())
+            {
                 isInBoundary = true;
+                contactPoint = result.mContactPointOn1;
+            }
 
             if (!isContactingPlates && ((result.mBodyID2 == positive_plane_body) || (result.mBodyID2 == negative_plane_body)))
+            {
+
                 isContactingPlates = true;
+                contactPoint = result.mContactPointOn1;
+            }
         };
 
         if (!isInBoundary || isContactingPlates)
         {
-            event::EndEvent *ev = new event::EndEvent(step, false);
+            std::wcout << "CONTACT: " << contactPoint.GetX() << "," << contactPoint.GetY() << "," << contactPoint.GetZ() << std::endl;
+            event::EndEvent *ev = new event::EndEvent(step, contactPoint, false);
             eventSignal(ev);
         }
     };

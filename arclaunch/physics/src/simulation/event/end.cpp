@@ -2,9 +2,10 @@
 
 namespace physics::simulation::event
 {
-    EndEvent::EndEvent(unsigned int step, bool cond) : BaseEvent(EventType::END)
+    EndEvent::EndEvent(unsigned int step, JPH::Vec3 point, bool cond) : BaseEvent(EventType::END)
     {
         this->step = step;
+        this->point = point;
         this->cond = cond;
     }
 };
