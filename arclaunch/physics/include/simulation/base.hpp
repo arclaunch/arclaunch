@@ -26,7 +26,7 @@ namespace physics::simulation
     {
         int step_amount = 300;
         int step_collision_amount = 5; // 1 is too inaccurate for our purposes, further testing soon.
-        float step_delta_time = DeltaTimeStep::FPS_120;
+        float step_delta_time = DeltaTimeStep::FPS_60;
         bool debug_recorder_enabled = true;
     };
 
