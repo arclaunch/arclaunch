@@ -155,7 +155,7 @@ namespace physics::simulation
         bool isInBoundary = false;
         bool isContactingPlates = false;
         bool isContactingTarget = false;
-        JPH::Vec3 contactPoint;
+        JPH::RVec3 contactPoint;
         for (const auto result : collector.mHits)
         {
 

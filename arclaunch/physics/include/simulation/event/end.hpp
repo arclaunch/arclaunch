@@ -12,14 +12,14 @@ namespace physics::simulation::event
     {
     private:
         unsigned int step;
-        JPH::Vec3 point;
+        JPH::RVec3 point;
         bool cond;
 
     public:
-        EndEvent(unsigned int step, JPH::Vec3 point, bool cond);
+        EndEvent(unsigned int step, JPH::RVec3 point, bool cond);
 
         inline unsigned int getStep() { return this->step; };
-        inline JPH::Vec3 getPoint() { return this->point; };
+        inline JPH::RVec3 getPoint() { return this->point; };
         inline bool getCond() { return this->cond; };
     };
 }
