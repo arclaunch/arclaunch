@@ -3,6 +3,7 @@
 #include <Jolt/Jolt.h>
 
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
+#include <Jolt/Physics/Collision/Shape/CylinderShape.h>
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 
@@ -56,9 +57,23 @@ namespace physics::simulation
         negative_plane_body = body_interface.CreateAndAddBody(negative_plane_settings, JPH::EActivation::Activate);
         body_interface.SetUserData(negative_plane_body, TYPE_PLATE_NEG);
 
+        // Add target
+        // note that in theory you can collide with all sides of the target, but we use contact point to determine how you did and the front edge is the origin.
+        float capsule_half_thickness = 0.05f;
+        JPH::CylinderShapeSettings target_capsule_settings(capsule_half_thickness, getOptions()->target_radius);
+        target_capsule_settings.SetEmbedded();
+
+        JPH::ShapeSettings::ShapeResult target_sr = target_capsule_settings.Create();
+        JPH::ShapeRefC target_shape = target_sr.Get();
+        JPH::BodyCreationSettings target_settings(target_shape, getOptions()->target_coords + JPH::RVec3(capsule_half_thickness, 0, 0), JPH::Quat::sIdentity(), JPH::EMotionType::Static, ::physics::jolt::object::layers::NON_MOVING);
+        target = body_interface.CreateBody(target_settings); // Note that if we run out of bodies this can return nullptr
+        target->SetUserData(TYPE_TARGET);
+        body_interface.AddBody(target->GetID(), JPH::EActivation::Activate);
+        body_interface.SetRotation(target->GetID(), JPH::Quat::sRotation(JPH::Vec3::sAxisX(), JPH::DegreesToRadians(90.0f)), JPH::EActivation::Activate);
+        body_interface.SetRotation(target->GetID(), JPH::Quat::sRotation(JPH::Vec3::sAxisZ(), JPH::DegreesToRadians(90.0f)), JPH::EActivation::Activate);
+
         // Sphere settings
-        JPH::RVec3 charge_origin(getOptions()->charge_position_offset, chargeY, getOptions()->plate_distance_between / 2);
-        JPH::BodyCreationSettings charge_settings(new JPH::SphereShape(getOptions()->charge_radius), charge_origin, JPH::Quat::sIdentity(), JPH::EMotionType::Dynamic, ::physics::jolt::object::layers::MOVING); // temp non moving so no collide
+        JPH::BodyCreationSettings charge_settings(new JPH::SphereShape(getOptions()->charge_radius), getOptions()->launch_coords, JPH::Quat::sIdentity(), JPH::EMotionType::Dynamic, ::physics::jolt::object::layers::NON_MOVING); // temp non moving so no collide
 
         // Sphere: mass settings
         // https://github.com/jrouwe/JoltPhysics/discussions/967#discussioncomment-8720550
@@ -139,6 +154,7 @@ namespace physics::simulation
 
         bool isInBoundary = false;
         bool isContactingPlates = false;
+        bool isContactingTarget = false;
         JPH::Vec3 contactPoint;
         for (const auto result : collector.mHits)
         {
@@ -155,12 +171,18 @@ namespace physics::simulation
                 isContactingPlates = true;
                 contactPoint = result.mContactPointOn1;
             }
+
+            if (!isContactingTarget && result.mBodyID2 == target->GetID())
+            {
+                isContactingTarget = true;
+                contactPoint = result.mContactPointOn1;
+            }
         };
 
-        if (!isInBoundary || isContactingPlates)
+        if (!isInBoundary || isContactingPlates || isContactingTarget)
         {
             std::wcout << "CONTACT: " << contactPoint.GetX() << "," << contactPoint.GetY() << "," << contactPoint.GetZ() << std::endl;
-            event::EndEvent *ev = new event::EndEvent(step, contactPoint, false);
+            event::EndEvent *ev = new event::EndEvent(step, contactPoint, isContactingTarget);
             eventSignal(ev);
         }
     };

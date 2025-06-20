@@ -13,6 +13,9 @@ namespace physics::simulation
         float sphere_charge = 0.5_uc;
         float velocityX = 2.0f;
 
+        JPH::RVec3 launch_coords = JPH::RVec3(0.3f, 1.0f, 4.0f);
+        JPH::RVec3 target_coords = JPH::RVec3(0.6f, 1.0f, 4.06333f);
+
         // not expected to change but here for flexiblity
         float plate_size_x = 8.0f;
         float plate_size_y = 8.0f;
@@ -21,7 +24,7 @@ namespace physics::simulation
 
         // time step 5 tested with 0.04 through 0.08 inclusive
         float charge_radius = 0.05f; // 7.95 @ 0.05f (passing test case);
-        float charge_position_offset = 0.3f;
+        float target_radius = 0.20f;
     };
 
     class PlatesSimulation : public BaseSimulation
@@ -31,8 +34,10 @@ namespace physics::simulation
         const static uint64_t TYPE_PLATE_NEG = 2;
         const static uint64_t TYPE_CHARGE = 3;
         const static uint64_t TYPE_BOUNDARY = 4;
+        const static uint64_t TYPE_TARGET = 5;
 
         JPH::Body *charge = nullptr;
+        JPH::Body *target = nullptr;
         JPH::Body *boundaryBody = nullptr;
 
         JPH::BodyID positive_plane_body;
