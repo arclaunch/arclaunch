@@ -5,10 +5,12 @@
             "includePath": [
                 "${workspaceFolder}/arclaunch/server/include/",
                 "${workspaceFolder}/arclaunch/physics/include/",
+                "${workspaceFolder}/arclaunch/physics/test/src/",
                 "${workspaceFolder}/lib/quiche/quiche/include/",
                 "${workspaceFolder}/lib/uthash/src",
                 "${workspaceFolder}/lib/joltphysics",
-                "${workspaceFolder}/lib/boost/libs/*/include/"
+                "${workspaceFolder}/lib/boost/libs/*/include/",
+                "${workspaceFolder}/lib/googletest/*/include"
             ]
         }
     ],

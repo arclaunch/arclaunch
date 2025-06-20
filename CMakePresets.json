@@ -36,6 +36,14 @@
             "displayName": "Android (cross-compiled)",
             "inherits": "base",
             "toolchainFile": "toolchain-android.cmake"
+        },
+        {
+            "name": "linux-test",
+            "displayName": "Test (native)",
+            "inherits": "linux",
+            "cacheVariables": {
+                "IS_TEST_ENV": "true"
+            }
         }
     ]
 }

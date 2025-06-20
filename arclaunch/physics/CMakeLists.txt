@@ -34,3 +34,7 @@ target_include_directories(${PROJECT}
 )
 
 target_link_libraries(${PROJECT} PUBLIC Jolt::Jolt Boost::signals2)
+
+if (IS_TEST_ENV STREQUAL "true")
+    add_subdirectory(test)
+endif()

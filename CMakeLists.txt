@@ -87,6 +87,10 @@ ExternalProject_Add(
 set_target_properties(jolt_ext PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 
+if (IS_TEST_ENV STREQUAL "true")
+    add_subdirectory(lib/googletest)
+endif()
+
 add_subdirectory(arclaunch/physics)
 add_subdirectory(arclaunch/unity)
 

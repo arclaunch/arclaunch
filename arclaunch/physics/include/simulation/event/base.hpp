@@ -17,7 +17,7 @@ namespace physics::simulation::event
 
     protected:
     public:
-        inline EventType getType() { return this->type; };
+        inline EventType getType() const { return this->type; };
         BaseEvent(EventType type) { this->type = type; };
     };
 }
