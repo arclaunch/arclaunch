@@ -3,12 +3,12 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/arclaunch/server/include/**",
-                "${workspaceFolder}/arclaunch/physics/include/**",
-                "${workspaceFolder}/lib/quiche/quiche/include/**",
+                "${workspaceFolder}/arclaunch/server/include/",
+                "${workspaceFolder}/arclaunch/physics/include/",
+                "${workspaceFolder}/lib/quiche/quiche/include/",
                 "${workspaceFolder}/lib/uthash/src",
                 "${workspaceFolder}/lib/joltphysics",
-                "${workspaceFolder}/lib/boost/libs/**/include/**"
+                "${workspaceFolder}/lib/boost/libs/*/include/"
             ]
         }
     ],
