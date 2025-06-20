@@ -25,6 +25,14 @@ using namespace JPH::literals;
 namespace server::jolt
 {
 
+    const std::string Instance::default_filename = std::string("state.jor");
+
+    Instance::Instance(std::shared_ptr<JPH::PhysicsSystem> system, std::string filename)
+    {
+        this->system = system;
+        this->recorder = std::make_shared<::physics::jolt::debug::Recorder>(filename.c_str());
+    };
+
     Provider::Provider()
     {
         // Ensure that bootstrap func was called (once)
@@ -52,17 +60,23 @@ namespace server::jolt
         // Note: As this is an interface, PhysicsSystem will take a reference to this so this instance needs to stay alive!
         object_vs_object_layer_filter = new ::physics::jolt::object::ObjectLayerPairFilterImpl();
 
-        // Now we can create the actual physics system.
-        physics_system = new JPH::PhysicsSystem();
-        physics_system->Init(cMaxBodies, cNumBodyMutexes, cMaxBodyPairs, cMaxContactConstraints, *broad_phase_layer_interface, *object_vs_broad_phase_layer_filter, *object_vs_object_layer_filter);
-
-        recorder = new ::physics::jolt::debug::Recorder("state.jor");
+        // Now we can create the actual physics system. (call create)
     };
 
-    void Provider::update(float delta_time, int steps)
+    void Provider::update(std::shared_ptr<Instance> inst, float delta_time, int steps)
     {
 
-        physics_system->Update(delta_time, steps, temp_allocator, job_system);
-        recorder->drawIfAvailable(physics_system);
+        inst->getSystem()->Update(delta_time, steps, temp_allocator, job_system);
+        inst->getRecorder()->drawIfAvailable(inst->getSystem().get());
     };
+
+    std::shared_ptr<Instance> Provider::create()
+    {
+        std::shared_ptr<JPH::PhysicsSystem> system = std::make_shared<JPH::PhysicsSystem>();
+        system->Init(cMaxBodies, cNumBodyMutexes, cMaxBodyPairs, cMaxContactConstraints, *broad_phase_layer_interface, *object_vs_broad_phase_layer_filter, *object_vs_object_layer_filter);
+
+        std::shared_ptr<Instance> inst = std::make_shared<Instance>(system);
+        systems.push_back(inst);
+        return inst;
+    }
 };

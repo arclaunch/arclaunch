@@ -18,6 +18,21 @@
 
 namespace server::jolt
 {
+    class Instance
+    {
+    private:
+        std::shared_ptr<JPH::PhysicsSystem> system;
+        std::shared_ptr<::physics::jolt::debug::Recorder> recorder;
+
+    public:
+        static const std::string default_filename;
+
+        Instance(std::shared_ptr<JPH::PhysicsSystem> sys, std::string filename = default_filename);
+
+        inline std::shared_ptr<JPH::PhysicsSystem> getSystem() { return this->system; };
+        inline std::shared_ptr<::physics::jolt::debug::Recorder> getRecorder() { return this->recorder; };
+    };
+
     class Provider
     {
     private:
@@ -70,9 +85,11 @@ namespace server::jolt
     public:
         Provider();
 
-        void update(float delta_time, int steps);
+        void update(std::shared_ptr<Instance> inst, float delta_time, int steps);
 
-        JPH::PhysicsSystem *physics_system;
+        std::shared_ptr<Instance> create();
+
+        std::vector<std::shared_ptr<Instance>> systems;
         ::physics::jolt::debug::Recorder *recorder;
     };
 };

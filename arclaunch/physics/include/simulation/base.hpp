@@ -37,7 +37,8 @@ namespace physics::simulation
 
         BaseOptions *options;
         server::jolt::Provider *provider;
-        inline JPH::BodyInterface &GetBodyInterface() { return provider->physics_system->GetBodyInterface(); };
+        std::shared_ptr<server::jolt::Instance> inst;
+        inline JPH::BodyInterface &GetBodyInterface() { return inst->getSystem()->GetBodyInterface(); };
 
         void emitBodyEvents();
 

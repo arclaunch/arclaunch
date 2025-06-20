@@ -12,6 +12,7 @@ namespace physics::simulation
     BaseSimulation::BaseSimulation(Provider *provider)
     {
         this->provider = provider;
+        this->inst = provider->create();
     };
 
     void BaseSimulation::execute()
@@ -28,7 +29,7 @@ namespace physics::simulation
         ++step;
         preStep(step);
 
-        provider->update(options->step_delta_time, options->step_collision_amount); // calls debug draw if avail
+        provider->update(inst, options->step_delta_time, options->step_collision_amount); // calls debug draw if avail
 
         postStep(step);
     };
@@ -38,8 +39,8 @@ namespace physics::simulation
         //        JPH::BodyInterface &body_interface = GetBodyInterface();
 
         JPH::BodyIDVector bodyIds;
-        provider->physics_system->GetBodies(bodyIds);
-        const JPH::BodyLockInterfaceLocking &lock_interface = provider->physics_system->GetBodyLockInterface();
+        inst->getSystem()->GetBodies(bodyIds);
+        const JPH::BodyLockInterfaceLocking &lock_interface = inst->getSystem()->GetBodyLockInterface();
 
         for (const auto &id : bodyIds)
         {
